@@ -35,4 +35,22 @@ func main() {
 	c[0] = "changed"
 	fmt.Println("After modification:", c, s)
 
+	// range over maps
+	kvs := map[string]string{"a": "apple", "b": "banana"}
+	for k, v := range kvs {
+		fmt.Printf("%s -> %s\n", k, v)
+	}
+
+	// range over string
+	str := "hello"
+	for i, b := range str {
+		fmt.Printf("%d -> %c\n", i, b)
+	}
+
+	var courses = []string{"js", "java", "react"}
+	// Removing java at index 1
+	index := 1
+	courses = append(courses[:index], courses[index+1:]...)
+	fmt.Println("courses:", courses)
+
 }
