@@ -6,7 +6,8 @@ import (
 	"math"
 )
 
-var ErrNegSqrt = errors.New("Number cannot be negative")
+// using errors package
+var ErrNegSqrt = errors.New("Number Cannot Be Negative")
 
 func sqrt(num float64) (float64, error) {
 	if num < 0 {
@@ -16,7 +17,6 @@ func sqrt(num float64) (float64, error) {
 }
 
 func main() {
-	// Test case 1: Positive number
 	result, err := sqrt(-16)
 	if err != nil {
 		fmt.Println(err)

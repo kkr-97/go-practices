@@ -14,10 +14,10 @@ func FindIndex[T comparable](s []T, x T) int {
 func main() {
 	// Test the function with a slice of integers
 	intSlice := []int{1, 2, 3, 4, 5}
-	fmt.Println("index of 9: %d", FindIndex(intSlice, 9))
+	fmt.Printf("index of 9: %d", FindIndex(intSlice, 9))
 
 	// Test the function with a slice of strings
 	stringSlice := []string{"apple", "banana", "cherry", "date", "elder"}
-	fmt.Println("index of 'grape': %d", FindIndex(stringSlice, "date"))
+	fmt.Printf("index of 'grape': %d", FindIndex(stringSlice, "date"))
 
 }
