@@ -7,7 +7,7 @@ import (
 )
 
 // using errors package
-var ErrNegSqrt = errors.New("Number Cannot Be Negative")
+var ErrNegSqrt = errors.New("number cannot be negative")
 
 func sqrt(num float64) (float64, error) {
 	if num < 0 {
@@ -17,10 +17,14 @@ func sqrt(num float64) (float64, error) {
 }
 
 func main() {
+	//using errors pkg
 	result, err := sqrt(-16)
 	if err != nil {
 		fmt.Println(err)
 	} else {
 		fmt.Println("Square root of 16 is:", result)
 	}
+
+	//using custom error
+	CustomErrorMain()
 }
