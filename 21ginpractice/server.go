@@ -54,6 +54,7 @@ func userDetails(ctx *gin.Context) {
 
 func main() {
 	server := gin.Default()
+	db := InitDB()
 
 	server.GET("/", serveHome)
 
