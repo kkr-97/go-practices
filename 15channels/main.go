@@ -45,13 +45,14 @@ func example2() {
 }
 
 func example3() {
-	ch := make(chan int, 1)
+	ch := make(chan int, 2)
 	wg := sync.WaitGroup{}
 
 	wg.Add(2)
 
 	go func() {
 		fmt.Println(<-ch) // blocks the code, till the value in the channel is received
+		fmt.Println(<-ch)
 		fmt.Println(<-ch)
 		fmt.Println(<-ch)
 
@@ -62,7 +63,8 @@ func example3() {
 	go func() {
 		ch <- 5
 		ch <- 666 //trying to reassign the channel value, which will throws an error
-		ch <- 444
+		ch <- 444 //If a sender tries to send a value when the buffer is full, it will block until a receiver removes a value from the buffer.
+		ch <- 555
 		wg.Done()
 	}()
 
@@ -73,4 +75,10 @@ func main() {
 	// example1()
 	// example2()
 	example3()
+
+	// ch2 := make(chan string) //unbuffered channel
+
+	// //below gives runtime error because, An unbuffered channel requires both a sender and a receiver to be ready at the same time.
+	// ch2 <- "hello"
+	// fmt.Println(<-ch2)
 }
