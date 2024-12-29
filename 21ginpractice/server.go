@@ -2,10 +2,12 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/kkr-97/gin-practice/controllers"
+	internal "github.com/kkr-97/gin-practice/internal/database"
 )
 
 func serveHome(ctx *gin.Context) {
@@ -54,7 +56,11 @@ func userDetails(ctx *gin.Context) {
 
 func main() {
 	server := gin.Default()
-	db := InitDB()
+	db := internal.InitDB()
+
+	if db == nil {
+		log.Fatal("Failed to connect to the database")
+	}
 
 	server.GET("/", serveHome)
 
