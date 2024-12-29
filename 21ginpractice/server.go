@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/kkr-97/gin-practice/controllers"
 )
 
 func serveHome(ctx *gin.Context) {
@@ -55,10 +56,15 @@ func main() {
 	server := gin.Default()
 
 	server.GET("/", serveHome)
-	//working on params
-	server.GET("/:id/:newId", changeId)
-	//binding or consuming JSON data into struct
-	server.POST("/new_user", userDetails)
+
+	// //working on params
+	// server.GET("/:id/:newId", changeId)
+
+	// //binding or consuming JSON data into struct
+	// server.POST("/new_user", userDetails)
+
+	notesController := &controllers.NotesController{}
+	notesController.InitNotesControllerRoutes(server)
 
 	server.Run(":8080")
 	fmt.Println("Server is running on 8080 port!!")
