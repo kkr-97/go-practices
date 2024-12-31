@@ -9,7 +9,7 @@ type student struct {
 	studying string
 }
 
-//copy of actual struct instance is passes
+//copy of actual struct instance is passed
 func (s student) printName() {
 	fmt.Println("Name of the student is:", s.name)
 }

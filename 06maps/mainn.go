@@ -5,7 +5,7 @@ import "fmt"
 func main() {
 	languages := make(map[string]string)
 
-	languages["js"] = "javascrip"
+	languages["js"] = "javascript"
 	languages["py"] = "python"
 	languages["cpp"] = "c++"
 

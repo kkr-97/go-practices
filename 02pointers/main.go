@@ -3,14 +3,15 @@ package main
 import "fmt"
 
 func main() {
-	// var ptr *int
-	// fmt.Println(ptr)
+	var ptr1 *int
+	var ptr2 *int
+	fmt.Println(ptr1)
 
 	num := 24
-	var ptr = &num
-	fmt.Println("reference", ptr)
-	fmt.Println("value", *ptr)
+	ptr2 = &num
+	fmt.Println("reference", ptr2)
+	fmt.Println("value", *ptr2)
 
-	*ptr++
-	fmt.Println("value after increment", *ptr)
+	*ptr2++
+	fmt.Println("value after increment", *ptr2)
 }
