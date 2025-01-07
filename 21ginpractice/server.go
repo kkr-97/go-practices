@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/kkr-97/gin-practice/controllers"
 	internal "github.com/kkr-97/gin-practice/internal/database"
+	"github.com/kkr-97/gin-practice/services"
 )
 
 func serveHome(ctx *gin.Context) {
@@ -28,7 +29,7 @@ func serveHome(ctx *gin.Context) {
 
 func changeId(ctx *gin.Context) {
 	id := ctx.Param("id")
-	newId := ctx.Param(("newId"))
+	newId := ctx.Param("newId")
 
 	ctx.JSON(200, gin.H{
 		"message": "ID changed successfully",
@@ -62,16 +63,20 @@ func main() {
 		log.Fatal("Failed to connect to the database")
 	}
 
+	noteService := &services.NotesService{}
+	noteService.InitService(db)
+
 	server.GET("/", serveHome)
 
-	// //working on params
+	//working on params
 	// server.GET("/:id/:newId", changeId)
 
 	// //binding or consuming JSON data into struct
 	// server.POST("/new_user", userDetails)
 
 	notesController := &controllers.NotesController{}
-	notesController.InitNotesControllerRoutes(server)
+	notesController.InitNotesRoutes(server)
+	notesController.InitControllers(noteService)
 
 	server.Run(":8080")
 	fmt.Println("Server is running on 8080 port!!")

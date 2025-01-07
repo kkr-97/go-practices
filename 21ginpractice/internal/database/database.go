@@ -2,7 +2,6 @@ package internal
 
 import (
 	"fmt"
-	"log"
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -11,7 +10,7 @@ import (
 func InitDB() *gorm.DB {
 	db, err := gorm.Open(sqlite.Open("notes.db"), &gorm.Config{})
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
 		return nil
 	}
 	fmt.Println("DB connected successfully!!")
