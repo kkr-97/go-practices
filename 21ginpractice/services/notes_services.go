@@ -14,6 +14,7 @@ type NotesService struct {
 func (s *NotesService) InitService(dbInstance *gorm.DB) {
 	s.db = dbInstance
 	s.db.AutoMigrate(&internal.Note{})
+
 }
 
 func (s *NotesService) GetNotesService() []internal.Note {
