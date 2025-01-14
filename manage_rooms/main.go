@@ -38,7 +38,7 @@ func createRoom(c *gin.Context) {
 	err := db.QueryRow("SELECT code FROM rooms WHERE status = 'available' LIMIT 1").Scan(&code)
 
 	if err == sql.ErrNoRows {
-		code = generateCode() //edge case: duplicate code generated
+		code = generateCode() //edge case 1: duplicate code generated
 		_, err = db.Exec("INSERT INTO rooms (code, status) VALUES ($1, $2)", code, "unavailable")
 		if err != nil {
 			fmt.Println("Error while inserting new code:", err)
@@ -63,7 +63,24 @@ func createRoom(c *gin.Context) {
 func releaseRoom(c *gin.Context) {
 	code := c.Param("code")
 
-	_, err := db.Exec("UPDATE rooms SET status = 'available' WHERE code = $1", code)
+	// Check if the room exists and is not already released
+	var status string
+	err := db.QueryRow("SELECT status FROM rooms WHERE code = $1", code).Scan(&status)
+	if err == sql.ErrNoRows {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Room not found to release"})
+		return
+	} else if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to query room status"})
+		return
+	}
+
+	if status == "available" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Room is already released"})
+		return
+	}
+
+	// Update the room status to 'available'
+	_, err = db.Exec("UPDATE rooms SET status = 'available' WHERE code = $1", code)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to release room"})
 		return
