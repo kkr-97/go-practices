@@ -1,0 +1,30 @@
+version: "3"
+services:
+  postgres-db:
+    image: postgres:latest
+    container_name: postgres-db
+    environment:
+      POSTGRES_USER: admin2
+      POSTGRES_PASSWORD: 12345
+      POSTGRES_DB: manage_rooms
+    ports:
+      - "5433:5432"
+    networks:
+      - app-network
+
+  go-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: go-server
+    container_name: go-server
+    ports:
+      - "8080:8080"
+    networks:
+      - app-network
+    depends_on:
+      - postgres-db
+
+networks:
+  app-network:
+    driver: bridge

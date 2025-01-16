@@ -16,7 +16,8 @@ var db *sql.DB
 
 func initDB() {
 	var err error
-	dsn := "postgres://admin2:12345@localhost:5433/manage_rooms?sslmode=disable"
+	dsn := "postgres://admin2:12345@postgres-db:5432/manage_rooms?sslmode=disable"
+
 	db, err = sql.Open("pgx", dsn)
 	if err != nil {
 		log.Fatalf("Failed to connect to the database: %v", err)
