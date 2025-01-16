@@ -14,14 +14,41 @@ import (
 
 var db *sql.DB
 
-func init() {
+func initDB() {
 	var err error
-	dsn := "postgres://postgres:durga%401234@localhost:5432/manage_rooms?sslmode=disable"
+	dsn := "postgres://admin2:12345@localhost:5433/manage_rooms?sslmode=disable"
 	db, err = sql.Open("pgx", dsn)
 	if err != nil {
 		log.Fatalf("Failed to connect to the database: %v", err)
 	}
 
+	_, err = db.Exec(`
+        CREATE TABLE IF NOT EXISTS rooms (
+            code INTEGER PRIMARY KEY,
+            is_available BOOLEAN
+        );
+    `)
+	if err != nil {
+		log.Fatalf("Failed to create table: %v", err)
+	}
+
+	// Check if the rooms table is empty
+	var rowCount int
+	err = db.QueryRow("SELECT COUNT(*) FROM rooms").Scan(&rowCount)
+	if err != nil {
+		log.Fatalf("Failed to check row count: %v", err)
+	}
+
+	// If the table is empty, insert rows
+	if rowCount == 0 {
+		_, err = db.Exec(`
+			INSERT INTO rooms (code, is_available)
+			SELECT generate_series(0, 1679615), true;
+		`)
+		if err != nil {
+			log.Fatalf("Failed to insert room data: %v", err)
+		}
+	}
 }
 
 const charset = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -69,9 +96,9 @@ func createRoom(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
 		return
 	} else {
-		_, err = db.Exec("UPDATE rooms SET is_available = false WHERE code = $1", code)
+		_, err = db.Exec("UPDATE rooms SET is_available = false WHERE code = $1", int_code)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update room is_available"})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update room is_available", "desc": err})
 			return
 		}
 	}
@@ -111,12 +138,13 @@ func releaseRoom(c *gin.Context) {
 }
 
 func main() {
+	initDB()
 	r := gin.Default()
 
-	r.POST("/createroom", createRoom)
+	r.PUT("/createroom", createRoom)
 	r.PUT("/releaseroom/:code", releaseRoom)
 
-	if err := r.Run(":8081"); err != nil {
+	if err := r.Run(":8080"); err != nil {
 		log.Fatalf("Failed to run server: %v", err)
 	}
 }
