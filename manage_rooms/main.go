@@ -9,6 +9,9 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/golang-migrate/migrate/v4"
+	_ "github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
@@ -16,39 +19,44 @@ var db *sql.DB
 
 func initDB() {
 	var err error
-	dsn := "postgres://admin2:12345@postgres-db:5432/manage_rooms?sslmode=disable"
+	// dsn := "postgres://admin2:12345@localhost:5433/manage_rooms?sslmode=disable" //local
+	dsn := "postgres://admin2:12345@postgres-db:5432/manage_rooms?sslmode=disable" // docker
 
-	db, err = sql.Open("pgx", dsn)
+	db, err = sql.Open("postgres", dsn)
 	if err != nil {
 		log.Fatalf("Failed to connect to the database: %v", err)
 	}
 
-	_, err = db.Exec(`
-        CREATE TABLE IF NOT EXISTS rooms (
-            code INTEGER PRIMARY KEY,
-            is_available BOOLEAN
-        );
-    `)
+	// _, err = db.Exec(`
+	//     CREATE TABLE IF NOT EXISTS rooms (
+	//         code INTEGER PRIMARY KEY,
+	//         is_available BOOLEAN
+	//     );
+	// `)
+	// if err != nil {
+	// 	log.Fatalf("Failed to create table: %v", err)
+	// }
+
+	// Run migrations
+	m, err := migrate.New(
+		"file://./migrations",
+		dsn,
+	)
 	if err != nil {
-		log.Fatalf("Failed to create table: %v", err)
+		log.Fatalf("Failed to initialize migrate instance: %v", err)
 	}
+
+	if err := m.Up(); err != nil && err != migrate.ErrNoChange {
+		log.Fatalf("Migration failed: %v", err)
+	}
+
+	fmt.Println("migrations applied successfully!!", err)
 
 	// Check if the rooms table is empty
 	var rowCount int
 	err = db.QueryRow("SELECT COUNT(*) FROM rooms").Scan(&rowCount)
 	if err != nil {
 		log.Fatalf("Failed to check row count: %v", err)
-	}
-
-	// If the table is empty, insert rows
-	if rowCount == 0 {
-		_, err = db.Exec(`
-			INSERT INTO rooms (code, is_available)
-			SELECT generate_series(0, 1679615), true;
-		`)
-		if err != nil {
-			log.Fatalf("Failed to insert room data: %v", err)
-		}
 	}
 }
 
