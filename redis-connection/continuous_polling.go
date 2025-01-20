@@ -56,7 +56,7 @@ func (rs *RedisServer) reconnect() bool {
 	reconnectTimeout, cancel := context.WithTimeout(context.Background(), time.Second*20)
 	defer cancel()
 
-	rs.cache = configure()
+	// rs.cache = configure()
 	for {
 		select {
 		case <-reconnectTimeout.Done():
