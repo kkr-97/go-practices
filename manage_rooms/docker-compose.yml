@@ -25,6 +25,18 @@ services:
     depends_on:
       - postgres-db
 
+  redis:
+    image: redis
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    restart: always
+
 networks:
   app-network:
     driver: bridge
+
+volumes:
+  redis-data:
